@@ -1,0 +1,8 @@
+- hosts: app01
+  roles:
+    - role:  jebovic.mailhog
+      become: yes
+
+  tasks:
+  - name: enable
+    shell : "/usr/local/bin/mailhog -api-bind-addr :8025 -ui-bind-addr :8025"
