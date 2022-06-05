@@ -1,4 +1,4 @@
-- hosts: app01
+- hosts: deploymentservers
   roles:
     - role:  jebovic.mailhog
       become: yes
