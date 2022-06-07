@@ -5,4 +5,4 @@
 
   tasks:
   - name: enable
-    shell : "/usr/local/bin/mailhog -api-bind-addr :8025 -ui-bind-addr :8025"
+    shell : " /usr/local/bin/mailhog -api-bind-addr :8025 -ui-bind-addr :8025  > stdoutfile 2> stderrfile &"
