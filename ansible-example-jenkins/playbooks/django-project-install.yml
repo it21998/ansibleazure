@@ -111,7 +111,10 @@
         - makemigrations
         - migrate
     
-   
+    - name: allow 8000
+      shell : "ufw allow 8000"
+      become: yes
+      become_user: root
 
     - name: copy django service file
       template:
