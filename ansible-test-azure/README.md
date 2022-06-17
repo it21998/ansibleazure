@@ -1,29 +1,34 @@
-# Project set up
-* create an inventory file (e.g. hosts or hosts.yaml) that holds the remote hosts that ansible will handle.
-* Example entry is
-```yaml
-webserver: # <-- group
-  hosts: # <-- List of hosts in group
-    gcloud_host: # <-- host number 1 in group
-      ansible_host: 35.189.109.16
-      ansible_port: 22
-      ansible_ssh_user: rg
-    app01:  # <-- host number 2 in group
-      ansible_host: app01
-    app02:  # <-- host number 3 in group
-      ansible_host: app02
-  vars:  # <-- common variables in this group
-    ansible_python_interpreter: /usr/bin/python3
-```
-* to test if all hosts are accesible, run
+# Prerequisites
+* Installs on local machine that runs the playbooks
+* Ansible install
 ```bash
-ansible -m ping all
+sudo apt update
+sudo apt install software-properties-common
+sudo apt-add-repository --yes --update ppa:ansible/ansible
+
+sudo apt update
+sudo apt install ansible
+```
+* roles install
+```bash
+ansible-galaxy install geerlingguy.postgresql
+ansible-galaxy install jebovic.mailhog
 ```
 * to test if a group of hosts are accesible, run
 ```bash
 ansible -m ping all <group-name>
 ```
-
+# Possible tweaking code
+* hosts.yml
+```yaml
+deploymentservers:
+  hosts:
+    deploy1:
+      ansible_host: 20.223.241.34 #type yours
+      ansible_port: 22 #type yours
+      ansible_ssh_user: azureuser #type yours
+      #ansible_ssh_private_key_file= ~/.ssh/id_rsa.pub
+```
 # Run development environment with Vagrant
 * run testing environment
 ```bash
@@ -39,80 +44,16 @@ ansible-playbook -l database playbooks/database.yml
 Links:
 * [Vagrant Quick start](https://learn.hashicorp.com/collections/vagrant/getting-started)
 
-## Vault
-* create a file that holds the **secret**
-```bash
-touch playbooks/vars/api_key.yml
-```
-* encrypt the file
-```bash
-ansible-vault encrypt playbooks/vars/api_key.yml
-```
-* run task that needs this file
-```bash
-ansible-playbook playbooks/use-api-key.yaml --ask-vault-pass
-```
-and you will be asked to provide the password
-* edit the encrypoted file with
-```bash
-ansible-vault edit playbooks/vars/api_key.ym
-```
-* use stored password to decrypt
-create a file that holds the password with 600 permissions
-```bash
-vim ~/.ansible/vault_pass.txt
-chmod 600 ~/.ansible/vault_pass.txt
-```
-```bash
-ansible-playbook playbooks/use-api-key.yaml --vault-password-file  ~/.ansible/vault_pass.txt
-```
-Links:
-* [Encrypting content with Ansible Vault](https://docs.ansible.com/ansible/latest/user_guide/vault.html)
-## Ignore host_key_checking
+# Open ports on azure
+* 8000
+* 9000
+* 5000
+* 8025
 
-add this line to ``ansible.cfg`` in [defaults] section
-```ini
-host_key_checking = false
-```
-Links:
-* [Managing host key checking](https://docs.ansible.com/ansible/latest/user_guide/connection_details.html)
-
-
-## Get host basic info
+# Ready to run playbooks
 ```bash
-ansible-playbook -l <hostname> playbooks/hostvars_and_facts.yml
+ansible-playbook playbooks/postgres.yml
+ansible-playbook playbooks/django-project-install.yml
+ansible-playbook playbooks/django2-install.yml
+ansible-playbook playbooks/mailhog.yml
 ```
-## Create self-signed certificates
-```bash
-cd files/certs
-openssl req -x509 -newkey rsa:4096 -keyout server.key -out server.crt -days 365 --nodes -subj '/C=GR/O=myorganization/OU=it/CN=myorg.com'
-```
-notice that crt and key files are added to .gitignore
-
-
-* postgres
-install postgresql role
-```bash
-ansible-galaxy install geerlingguy.postgresql
-```
-## Docker
-```bash
-ansible-galaxy install geerlingguy.docker
-ansible-galaxy install geerlingguy.pip
-
-```
-## Jenkins
-```bash
-ansible-galaxy install geerlingguy.jenkins
-ansible-galaxy install geerlingguy.java
-
-```
-
-## Links
-* [apt module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/apt_module.html)
-* [file module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/file_module.html)
-* [copy module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html)
-* [service module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/service_module.html)
-* [debconf module](https://docs.ansible.com/ansible/latest/collections/ansible/builtin/debconf_module.html)
-
-* [ansible postgres role](https://galaxy.ansible.com/geerlingguy/postgresql)
