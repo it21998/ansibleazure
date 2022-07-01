@@ -57,3 +57,9 @@ ansible-playbook playbooks/django-project-install.yml
 ansible-playbook playbooks/django2-install.yml
 ansible-playbook playbooks/mailhog.yml
 ```
+# Access
+```bash
+http://20.223.241.34:8000/    #admin
+http://20.223.241.34:9000/    #system
+http://20.223.241.34:8025/    #mailhog
+```
